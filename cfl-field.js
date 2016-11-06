@@ -24,7 +24,15 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.hashMarkHeight = this.yardToPixelMultipler;
 	
 	this.ctx = document.getElementById(element_id).getContext('2d');
-	//this.ctx.scale(2,2);
+	this.pixelRatio = Math.round(window.devicePixelRatio) || 1;
+	if ( this.pixelRatio > 1 ) {
+		document.getElementById(this.element_id).width = document.getElementById(this.element_id).width * this.pixelRatio;
+		document.getElementById(this.element_id).height = document.getElementById(this.element_id).height * this.pixelRatio;
+		document.getElementById(this.element_id).style.width = (document.getElementById(this.element_id).width / this.pixelRatio) + "px";
+		document.getElementById(this.element_id).style.height = (document.getElementById(this.element_id).height / this.pixelRatio) + "px";
+
+		this.yardToPixelMultipler = document.getElementById(this.element_id).width / 150;
+	}
 
 	this.drawPlay = function( team_abbreviation, play_type_id, field_position_start, field_position_end ) {
 		1;
@@ -61,7 +69,6 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	}
 
 	this.setEndZoneLogos = function() {
-		debugger;
 		var logoImage = new Image(); 
 		logoImage.src = this.visitor_team_image;
 		logoImage.onload = function() {
@@ -126,8 +133,9 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 
 	this.createYardNumbers = function() {
 		var int_width_of_endzone = this.endZoneWidth * this.yardToPixelMultipler;
+		var str_font = (28 * this.pixelRatio) + 'px Arial';
 
-		this.ctx.font = "28px Arial";
+		this.ctx.font = str_font;
 		this.ctx.textAlign = "center";
 		this.ctx.fillStyle = "#ffffff";
 
