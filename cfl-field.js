@@ -23,16 +23,8 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.yardLineBetweenWidth = 5;
 	this.hashMarkHeight = this.yardToPixelMultipler;
 	
-	this.ctx = document.getElementById(element_id).getContext('2d');
-	this.pixelRatio = Math.round(window.devicePixelRatio) || 1;
-	if ( this.pixelRatio > 1 ) {
-		document.getElementById(this.element_id).width = document.getElementById(this.element_id).width * this.pixelRatio;
-		document.getElementById(this.element_id).height = document.getElementById(this.element_id).height * this.pixelRatio;
-		document.getElementById(this.element_id).style.width = (document.getElementById(this.element_id).width / this.pixelRatio) + "px";
-		document.getElementById(this.element_id).style.height = (document.getElementById(this.element_id).height / this.pixelRatio) + "px";
-
-		this.yardToPixelMultipler = document.getElementById(this.element_id).width / 150;
-	}
+	this.canvas = document.getElementById(element_id);
+	this.ctx = this.canvas.getContext('2d');
 
 	this.drawPlay = function( team_abbreviation, play_type_id, field_position_start, field_position_end ) {
 		1;
@@ -48,6 +40,8 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	}
 	
 	this.drawField = function() {
+		this.resizeCanvas();
+
 		// Fill the inside of the field.
 		this.ctx.fillStyle = "rgb(0, 153, 41)";
 		this.ctx.fillRect(0, 0, document.getElementById(this.element_id).width, document.getElementById(this.element_id).height);
@@ -67,6 +61,32 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 		// Draw logos in each end zone.
 		this.setEndZoneLogos();
 	}
+
+    this.resizeCanvas = function() {
+	    this.canvas.style.width = '100%';
+	  	this.canvas.style.height = '43.33%';
+
+    	var int_width = this.canvas.offsetWidth;
+    	if ( int_width > window.innerWidth ) {
+    		int_width = window.innerWidth - 20;
+    	}
+
+	  	this.canvas.width  = int_width;
+	  	this.canvas.height = (int_width / 2.30769230769231);
+
+		this.pixelRatio = Math.round(window.devicePixelRatio) || 1;
+		if ( this.pixelRatio > 1 ) {
+			this.canvas.width = this.canvas.width * this.pixelRatio;
+			this.canvas.height = this.canvas.height * this.pixelRatio;
+			this.canvas.style.width = (this.canvas.width / this.pixelRatio) + "px";
+			this.canvas.style.height = (this.canvas.height / this.pixelRatio) + "px";
+
+			this.yardToPixelMultipler = this.canvas.width / 150;
+		}
+
+		// If the window is resized, ensure we stay within it (and proportional).
+	    //window.addEventListener('resize', window.cflfield.drawField, false);
+    }
 
 	this.setEndZoneLogos = function() {
 		var logoImage = new Image(); 

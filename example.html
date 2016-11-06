@@ -4,7 +4,8 @@
 		<script src="cfl-field.js"></script>
 		<script>
 			window.cflfield = null;
-			$(document).ready(function(){
+			jQuery(document).ready(function() {
+				// Actually draw the initial CFL field on the page.
 				window.cflfield = new Field('canvas', 'WPG', 'HAM');
 
 				/*
@@ -19,6 +20,8 @@
 		</script>
 	</head>
 	<body>
-		<canvas style="border: 2px black solid;" id="canvas" width="940" height="407"></canvas>
+		<div style="width: 940px;">
+			<canvas style="border: 2px black solid;" id="canvas"></canvas>
+		</div>
 	</body>
 </html>
