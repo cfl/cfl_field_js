@@ -7,9 +7,11 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.visitor_team_abbreviation = visitor_team_abbreviation;
 	this.visitor_team_letter = null;
 	this.visitor_team_colour = null;
+	this.visitor_team_image = null;
 	this.home_team_abbreviation = home_team_abbreviation;
 	this.home_team_letter = null;
 	this.home_team_colour = null;
+	this.home_team_image = null;
 
 	// Define values that set how the field looks.
 	this.yardToPixelMultipler = document.getElementById(this.element_id).width / 150;
@@ -31,8 +33,10 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.setTeamInfo = function() {
 		this.visitor_team_letter = this.getTeamValue(this.visitor_team_abbreviation, 'letter');
 		this.visitor_team_colour = this.getTeamValue(this.visitor_team_abbreviation, 'colour');
+		this.visitor_team_image = this.getTeamValue(this.visitor_team_abbreviation, 'image');
 		this.home_team_letter = this.getTeamValue(this.home_team_abbreviation, 'letter');
 		this.home_team_colour = this.getTeamValue(this.home_team_abbreviation, 'colour');
+		this.home_team_image = this.getTeamValue(this.home_team_abbreviation, 'image');
 	}
 	
 	this.drawField = function() {
@@ -51,6 +55,38 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 
 		// Draw ten-yard numbers on the field.
 		this.createYardNumbers();
+
+		// Draw logos in each end zone.
+		this.setEndZoneLogos();
+	}
+
+	this.setEndZoneLogos = function() {
+		debugger;
+		var logoImage = new Image(); 
+		logoImage.src = this.visitor_team_image;
+		logoImage.onload = function() {
+			var int_width = 20;
+			var int_height = (document.getElementById(window.cflfield.element_id).height / 2) + 37.5;
+
+			window.cflfield.ctx.save();
+			window.cflfield.ctx.translate(int_width, int_height); 
+			window.cflfield.ctx.rotate(4.71239); 
+			window.cflfield.ctx.drawImage(logoImage, 0, 0, 75, 75);
+			window.cflfield.ctx.restore(); // Restore the unrotated context.
+		} 
+
+		var logoImage2 = new Image(); 
+		logoImage2.src = this.home_team_image;
+		logoImage2.onload = function() {
+			var int_width = document.getElementById(window.cflfield.element_id).width - 25;
+			var int_height = (document.getElementById(window.cflfield.element_id).height / 2) - 37.5;
+
+			window.cflfield.ctx.save();
+			window.cflfield.ctx.translate(int_width, int_height); 
+			window.cflfield.ctx.rotate(1.5708); 
+			window.cflfield.ctx.drawImage(logoImage2, 0, 0, 75, 75);
+			window.cflfield.ctx.restore(); // Restore the unrotated context.
+		} 
 	}
 	
 	this.createLines = function() {
@@ -165,43 +201,53 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.getTeamValue = function( teamAbbreviation, key ) {
 		var str_letter = '';
 		var str_colour = '';
+		var str_image = '';
 
 		switch( teamAbbreviation ) {
 		    case 'BC':
 		        str_letter = 'B';
 		        str_colour = '#f05522';
+		        str_image = 'images/logo-bc.png';
 		        break;
 		    case 'EDM':
 		        str_letter = 'E';
 		        str_colour = '#fcb42b';
+		        str_image = 'images/logo-edm.png';
 		        break;
 	       	case 'CGY':
 		        str_letter = 'C';
 		        str_colour = '#cb232e';
+		        str_image = 'images/logo-cgy.png';
 		        break;
 		    case 'SSK':
 		        str_letter = 'S';
 		        str_colour = '#096140';
+		        str_image = 'images/logo-ssk.png';
 		        break;
 		    case 'WPG':
 		        str_letter = 'W';
 		        str_colour = '#b99359';
+		        str_image = 'images/logo-wpg.png';
 		        break;
 		    case 'HAM':
 		        str_letter = 'H';
 		        str_colour = '#ffb614';
+		        str_image = 'images/logo-ham.png';
 		        break;
 	       	case 'TOR':
 		        str_letter = 'T';
 		        str_colour = '#6890c8';
+		        str_image = 'images/logo-tor.png';
 		        break;
 	        case 'OTT':
 		        str_letter = 'O';
 		        str_colour = '#ab1e2d';
+		        str_image = 'images/logo-ott.png';
 		        break;
 		    case 'MTL':
 		        str_letter = 'M';
 		        str_colour = '#90052b';
+		        str_image = 'images/logo-mtl.png';
 		        break;
 		}
 
@@ -210,6 +256,9 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 		}
 		if ( key == 'colour' ) {
 			return str_colour;
+		}
+		if ( key == 'image' ) {
+			return str_image;
 		}
 
 		return '';

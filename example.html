@@ -3,9 +3,9 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 		<script src="cfl-field.js"></script>
 		<script>
-			var field;
+			window.cflfield = null;
 			$(document).ready(function(){
-				field = new Field('canvas', 'WPG', 'CGY');
+				window.cflfield = new Field('canvas', 'WPG', 'HAM');
 
 				/*
 				field.setStartingPoint(10);
