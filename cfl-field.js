@@ -14,8 +14,8 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	// Define values that keep track of how to draw plays and drives.
 	this.driveNumber = 0;
 	this.driveTeam = '';
-	this.driveVertical = 75; 
-	this.driveSeparationPixels = 50;
+	this.drivePointStart = 0;
+	this.drivePointEnd = 0;
 
 	// Define values that set how the field looks.
 	this.yardToPixelMultipler = document.getElementById(this.element_id).width / 150;
@@ -26,18 +26,38 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.endZoneWidth = 20;
 	this.yardLineBetweenWidth = 5;
 	this.hashMarkHeight = this.yardToPixelMultipler;
+	this.driveVertical = 75; 
+	this.driveLineThickness = 50;
+	this.driveLineTextSize = 14;
+	this.driveSeparationPixels = 100;
 	
 	this.canvas = document.getElementById(element_id);
 	this.ctx = this.canvas.getContext('2d');
 
 	this.drawPlay = function( team_abbreviation, play_type_id, field_position_start, field_position_end ) {
-		// Set the vertical level we're going to draw the play on.
+		// Figure out if we're drawing a new scoring drive, setting values appropriately.
+		var bool_new_drive = false;
 		if ( this.driveTeam != team_abbreviation ) {
+			// If room exists, draw a summary of the last drive chart on it.
+			if ( this.driveNumber > 0 ) {
+				var str_font = (this.driveLineTextSize * this.pixelRatio) + 'px Arial';
+				var int_midpoint_horiz = (this.drivePointStart + this.drivePointEnd) / 2;
+				var int_midpoint_vert = this.driveVertical + (this.driveLineTextSize / 2);
+
+				this.ctx.font = str_font;
+				this.ctx.textAlign = "center";
+				this.ctx.fillStyle = "#ffffff";
+				this.ctx.fillText("Drive #" + this.driveNumber, int_midpoint_horiz, int_midpoint_vert);
+			}
+
+			// Increment values so we're set up for the next scoring drive.
 			this.driveNumber = this.driveNumber + 1;
 
 			if ( this.driveNumber > 1 ) {
 				this.driveVertical = this.driveVertical + this.driveSeparationPixels;
 			}
+
+			bool_new_drive = true;
 
 			console.log('New scoring drive: ' + team_abbreviation);
 		}
@@ -65,13 +85,15 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 		var int_field_position_end = parseInt(field_position_end.substring(1, field_position_end.length));
 
 		// Calculate the start and end points.
-		// H35 = (Away Endzone) + (55 Yards) + (55 Yards - 35 Yards = 20 Yards)
 		var int_point_start = 0;
 		if ( bool_on_home_side_start == true ) {
 			int_point_start = (this.endZoneWidth * this.yardToPixelMultipler) + (55 * this.yardToPixelMultipler) + ((55 - int_field_position_start) * this.yardToPixelMultipler);	
 		}
 		else {
 			int_point_start = (this.endZoneWidth * this.yardToPixelMultipler) + (int_field_position_start * this.yardToPixelMultipler);				
+		}
+		if ( bool_new_drive == true ) {
+			this.drivePointStart = int_point_start;
 		}
 
 		var int_point_end = 0;
@@ -81,13 +103,14 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 		else {
 			int_point_end = (this.endZoneWidth * this.yardToPixelMultipler) + (int_field_position_end * this.yardToPixelMultipler);				
 		}
+		this.drivePointEnd = int_point_end;
 
 		// Draw a line if the scoring drive actually went somewhere.
 		if ( int_point_start != int_point_end ) {
 			console.log('   About to draw play from ' +  int_point_start + ' to ' + int_point_end + ' on vertical ' + this.driveVertical);
 
 			// Draw the team-coloured line.
-			this.ctx.lineWidth = 30;
+			this.ctx.lineWidth = this.driveLineThickness;
 			this.ctx.beginPath();
 			this.ctx.moveTo(int_point_start, this.driveVertical);
 			this.ctx.lineTo(int_point_end, this.driveVertical);
