@@ -1,7 +1,5 @@
 function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) {
 	this.element_id = element_id;
-	//this.currentPoint = 0;
-	//this.currentPlayY = 10;
 
 	// Define information about the teams involved.
 	this.visitor_team_abbreviation = visitor_team_abbreviation;
@@ -12,6 +10,12 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.home_team_letter = null;
 	this.home_team_colour = null;
 	this.home_team_image = null;
+
+	// Define values that keep track of how to draw plays and drives.
+	this.driveNumber = 0;
+	this.driveTeam = '';
+	this.driveVertical = 75; 
+	this.driveSeparationPixels = 50;
 
 	// Define values that set how the field looks.
 	this.yardToPixelMultipler = document.getElementById(this.element_id).width / 150;
@@ -27,7 +31,92 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.ctx = this.canvas.getContext('2d');
 
 	this.drawPlay = function( team_abbreviation, play_type_id, field_position_start, field_position_end ) {
-		1;
+		// Set the vertical level we're going to draw the play on.
+		if ( this.driveTeam != team_abbreviation ) {
+			this.driveNumber = this.driveNumber + 1;
+
+			if ( this.driveNumber > 1 ) {
+				this.driveVertical = this.driveVertical + this.driveSeparationPixels;
+			}
+
+			console.log('New scoring drive: ' + team_abbreviation);
+		}
+		this.driveTeam = team_abbreviation;
+		
+		// For the field position start and end points, figure out if it's on the home or
+		// away side.
+		var bool_on_home_side_start = true;
+		var bool_on_home_side_end = true;
+		if ( field_position_start.substring(0, 1) == this.visitor_team_letter ) {
+			bool_on_home_side_start = false;
+		}
+		if ( field_position_end.substring(0, 1) == this.visitor_team_letter ) {
+			bool_on_home_side_end = false;
+		}
+
+		// Set the line colour and thickness.
+		this.ctx.strokeStyle = this.home_team_colour;
+		if ( this.visitor_team_abbreviation == team_abbreviation ) {
+			this.ctx.strokeStyle = this.visitor_team_colour;
+		}
+
+		// Get the integer values for the field position start and end points.
+		var int_field_position_start = parseInt(field_position_start.substring(1, field_position_start.length));
+		var int_field_position_end = parseInt(field_position_end.substring(1, field_position_end.length));
+
+		// Calculate the start and end points.
+		// H35 = (Away Endzone) + (55 Yards) + (55 Yards - 35 Yards = 20 Yards)
+		var int_point_start = 0;
+		if ( bool_on_home_side_start == true ) {
+			int_point_start = (this.endZoneWidth * this.yardToPixelMultipler) + (55 * this.yardToPixelMultipler) + ((55 - int_field_position_start) * this.yardToPixelMultipler);	
+		}
+		else {
+			int_point_start = (this.endZoneWidth * this.yardToPixelMultipler) + (int_field_position_start * this.yardToPixelMultipler);				
+		}
+
+		var int_point_end = 0;
+		if ( bool_on_home_side_end == true ) {
+			int_point_end = (this.endZoneWidth * this.yardToPixelMultipler) + (55 * this.yardToPixelMultipler) + ((55 - int_field_position_end) * this.yardToPixelMultipler);	
+		}
+		else {
+			int_point_end = (this.endZoneWidth * this.yardToPixelMultipler) + (int_field_position_end * this.yardToPixelMultipler);				
+		}
+
+		// Draw a line if the scoring drive actually went somewhere.
+		if ( int_point_start != int_point_end ) {
+			console.log('   About to draw play from ' +  int_point_start + ' to ' + int_point_end + ' on vertical ' + this.driveVertical);
+
+			// Draw the team-coloured line.
+			this.ctx.lineWidth = 30;
+			this.ctx.beginPath();
+			this.ctx.moveTo(int_point_start, this.driveVertical);
+			this.ctx.lineTo(int_point_end, this.driveVertical);
+			this.ctx.stroke();
+
+			// Determine which way the marker should face based on what direction the 
+			// play we drew is going.
+			var end_marker_multiplier = -1;
+			if ( int_point_start > int_point_end ) {
+				end_marker_multiplier = 1;
+			}
+
+			// Draw the play-end marker vertical stripe.
+			this.ctx.beginPath();
+			this.ctx.strokeStyle = "black";
+			this.ctx.moveTo(int_point_end + (5 * end_marker_multiplier), this.driveVertical);
+			this.ctx.lineTo(int_point_end, this.driveVertical);
+			this.ctx.stroke();
+
+			// Draw the play-end marker horizontal line (if there's room to).
+			if ( Math.abs(int_point_start - int_point_end) >= 15 ) {
+				this.ctx.lineWidth = 2.5;
+				this.ctx.beginPath();
+				this.ctx.strokeStyle = "black";
+				this.ctx.moveTo(int_point_end + (15 * end_marker_multiplier), this.driveVertical);
+				this.ctx.lineTo(int_point_end, this.driveVertical);
+				this.ctx.stroke();
+			}
+		}
 	}
 
 	this.setTeamInfo = function() {

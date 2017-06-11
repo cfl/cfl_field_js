@@ -6,16 +6,28 @@
 			window.cflfield = null;
 			jQuery(document).ready(function() {
 				// Actually draw the initial CFL field on the page.
-				window.cflfield = new Field('canvas', 'WPG', 'HAM');
+				window.cflfield = new Field('canvas', 'WPG', 'SSK');
 
-				/*
-				field.setStartingPoint(10);
-				field.markPlay(20);
-				field.markPlay(-3);
-				console.log(field.yardsToGo());
-				field.markPlay(73);
-				field.firstDownLine(30);
-				*/
+				// Draw some plays (manually simulate from http://api.cfl.ca/v1/games/2017/game/2365? ).
+				window.cflfield.drawPlay('SSK', 4, 'S35', 'W24'); // Kickoff
+
+				window.cflfield.drawPlay('WPG', 2, 'W24', 'W24'); // Pass
+				window.cflfield.drawPlay('WPG', 2, 'W24', 'W24'); // Pass
+				window.cflfield.drawPlay('WPG', 6, 'W24', 'S41'); // Punt
+
+				window.cflfield.drawPlay('SSK', 2, 'S41', 'S52'); // Pass
+				window.cflfield.drawPlay('SSK', 2, 'S52', 'S55'); // Pass
+				window.cflfield.drawPlay('SSK', 2, 'S55', 'S55'); // Pass
+				window.cflfield.drawPlay('SSK', 6, 'S55', 'W24'); // Punt
+
+				window.cflfield.drawPlay('WPG', 2, 'W24', 'W32'); // Pass
+				window.cflfield.drawPlay('WPG', 1, 'W32', 'W33'); // Rush
+				window.cflfield.drawPlay('WPG', 6, 'W33', 'W52'); // Punt
+
+				window.cflfield.drawPlay('SSK', 1, 'W52', 'W54'); // Rush
+				window.cflfield.drawPlay('SSK', 7, 'W54', 'W44'); // Team Loss
+
+
 			});
 		</script>
 	</head>
