@@ -160,18 +160,13 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
     		int_width = window.innerWidth - 20;
     	}
 
-	  	this.canvas.width  = int_width;
-	  	this.canvas.height = (int_width / 2.30769230769231);
-
 		this.pixelRatio = Math.round(window.devicePixelRatio) || 1;
-		if ( this.pixelRatio > 1 ) {
-			this.canvas.width = this.canvas.width * this.pixelRatio;
-			this.canvas.height = this.canvas.height * this.pixelRatio;
-			this.canvas.style.width = (this.canvas.width / this.pixelRatio) + "px";
-			this.canvas.style.height = (this.canvas.height / this.pixelRatio) + "px";
 
-			this.yardToPixelMultipler = this.canvas.width / 150;
-		}
+	  	this.canvas.width  = int_width * this.pixelRatio;
+	  	this.canvas.height = (int_width / 2.30769230769231) * this.pixelRatio;
+	  	this.canvas.style.width = (this.canvas.width / this.pixelRatio) + "px";
+		this.canvas.style.height = (this.canvas.height / this.pixelRatio) + "px";
+		this.yardToPixelMultipler = this.canvas.width / 150;
 
 		// If the window is resized, ensure we stay within it (and proportional).
 	    //window.addEventListener('resize', window.cflfield.drawField, false);
