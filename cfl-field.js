@@ -16,8 +16,11 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.driveTeam = '';
 	this.drivePointStart = 0;
 	this.drivePointEnd = 0;
+	this.drivePlayCount = 0;
+	this.driveYardsCount = 0;
 
 	// Define values that set how the field looks.
+	this.pixelRatio = Math.round(window.devicePixelRatio) || 1;
 	this.yardToPixelMultipler = document.getElementById(this.element_id).width / 150;
 	this.hashMarkSecondLineMultiplier = 0.36923076923077;
 	this.hashMarkThirdLineMultiplier = 0.63076923076923;
@@ -27,12 +30,13 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	this.yardLineBetweenWidth = 5;
 	this.hashMarkHeight = this.yardToPixelMultipler;
 	this.driveVertical = 75; 
-	this.driveLineThickness = 50;
+	this.driveLineThickness = 25 * this.pixelRatio;
 	this.driveLineTextSize = 14;
 	this.driveSeparationPixels = 100;
 	
 	this.canvas = document.getElementById(element_id);
 	this.ctx = this.canvas.getContext('2d');
+	this.history = new Array();
 
 	this.drawPlay = function( team_abbreviation, play_type_id, field_position_start, field_position_end ) {
 		// Figure out if we're drawing a new scoring drive, setting values appropriately.
@@ -44,10 +48,15 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 				var int_midpoint_horiz = (this.drivePointStart + this.drivePointEnd) / 2;
 				var int_midpoint_vert = this.driveVertical + (this.driveLineTextSize / 2);
 
+				var str_playcount = 'play';
+				if ( this.drivePlayCount > 1 ) {
+					str_playcount = 'plays';
+				}
+
 				this.ctx.font = str_font;
 				this.ctx.textAlign = "center";
 				this.ctx.fillStyle = "#ffffff";
-				this.ctx.fillText("Drive #" + this.driveNumber, int_midpoint_horiz, int_midpoint_vert);
+				this.ctx.fillText(this.drivePlayCount + ' ' + str_playcount + ', ' + this.driveYardsCount + ' yards', int_midpoint_horiz, int_midpoint_vert);
 			}
 
 			// Increment values so we're set up for the next scoring drive.
@@ -55,6 +64,12 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 
 			if ( this.driveNumber > 1 ) {
 				this.driveVertical = this.driveVertical + this.driveSeparationPixels;
+
+				if ( this.driveVertical > this.canvas.height ) {
+					//this.restoreState();
+
+					this.driveVertical = 75;
+				}
 			}
 
 			bool_new_drive = true;
@@ -83,6 +98,24 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 		// Get the integer values for the field position start and end points.
 		var int_field_position_start = parseInt(field_position_start.substring(1, field_position_start.length));
 		var int_field_position_end = parseInt(field_position_end.substring(1, field_position_end.length));
+
+		// Figure out the number of yards this play led to.
+		var int_abs_yards_gained = 0;
+		var int_abs_yard_point_start = 0;
+		var int_abs_yard_point_end = 0;
+		if ( bool_on_home_side_start == true ) {
+			int_abs_yard_point_start = 55 + (55 - int_field_position_start);
+		}
+		else {
+			int_abs_yard_point_start = int_field_position_start;
+		}
+		if ( bool_on_home_side_end == true ) {
+			int_abs_yard_point_end = 55 + (55 - int_field_position_end);
+		}
+		else {
+			int_abs_yard_point_end = int_field_position_end;
+		}
+		int_abs_yards_gained = Math.abs(int_abs_yard_point_start - int_abs_yard_point_end);
 
 		// Calculate the start and end points.
 		var int_point_start = 0;
@@ -140,6 +173,9 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 				this.ctx.stroke();
 			}
 		}
+
+		this.drivePlayCount = this.drivePlayCount + 1;
+		this.driveYardsCount = this.driveYardsCount + int_abs_yards_gained;
 	}
 
 	this.setTeamInfo = function() {
@@ -172,6 +208,19 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 
 		// Draw logos in each end zone.
 		this.setEndZoneLogos();
+
+		// Save the fully drawn field canvas.
+		//this.saveState();
+	}
+
+	this.saveState = function() {
+		var data = JSON.stringify(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
+		this.history.push(data);
+	}
+
+	this.restoreState = function() {
+		var reloadData = JSON.parse(this.history[0]);
+		this.ctx.putImageData(reloadData, 0, 0);
 	}
 
     this.resizeCanvas = function() {
@@ -182,8 +231,6 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
     	if ( int_width > window.innerWidth ) {
     		int_width = window.innerWidth - 20;
     	}
-
-		this.pixelRatio = Math.round(window.devicePixelRatio) || 1;
 
 	  	this.canvas.width  = int_width * this.pixelRatio;
 	  	this.canvas.height = (int_width / 2.30769230769231) * this.pixelRatio;

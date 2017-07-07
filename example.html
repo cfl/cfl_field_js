@@ -8,7 +8,7 @@
 				// Actually draw the initial CFL field on the page.
 				window.cflfield = new Field('canvas', 'WPG', 'SSK');
 
-				// Draw some plays (manually simulate from http://api.cfl.ca/v1/games/2017/game/2365? ).
+				// Draw some plays (manually simulate from http://api.cfl.ca/v1/games/2017/game/2365?include=play_by_play&key= ).
 				window.cflfield.drawPlay('SSK', 4, 'S35', 'W24'); // Kickoff
 
 				window.cflfield.drawPlay('WPG', 2, 'W24', 'W24'); // Pass
