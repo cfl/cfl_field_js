@@ -36,7 +36,6 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 	
 	this.canvas = document.getElementById(element_id);
 	this.ctx = this.canvas.getContext('2d');
-	this.history = new Array();
 
 	this.drawPlay = function( team_abbreviation, play_type_id, field_position_start, field_position_end ) {
 		// Figure out if we're drawing a new scoring drive, setting values appropriately.
@@ -66,7 +65,7 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 				this.driveVertical = this.driveVertical + this.driveSeparationPixels;
 
 				if ( this.driveVertical > this.canvas.height ) {
-					//this.restoreState();
+					this.drawField();
 
 					this.driveVertical = 75;
 				}
@@ -208,19 +207,6 @@ function Field( element_id, visitor_team_abbreviation, home_team_abbreviation ) 
 
 		// Draw logos in each end zone.
 		this.setEndZoneLogos();
-
-		// Save the fully drawn field canvas.
-		//this.saveState();
-	}
-
-	this.saveState = function() {
-		var data = JSON.stringify(this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height));
-		this.history.push(data);
-	}
-
-	this.restoreState = function() {
-		var reloadData = JSON.parse(this.history[0]);
-		this.ctx.putImageData(reloadData, 0, 0);
 	}
 
     this.resizeCanvas = function() {
