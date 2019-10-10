@@ -49,11 +49,11 @@
             var scene = new BABYLON.Scene(engine);
         
             // Add a camera to the scene and attach it to the canvas
-            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 1.5, BABYLON.Vector3.Zero(), scene);
+            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 1, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
         
-            camera.lowerRadiusLimit = 1;
-            camera.upperRadiusLimit = 2.5;
+            camera.lowerRadiusLimit = 0;
+            camera.upperRadiusLimit = 3;
             //camera.useBouncingBehavior = true;
         
             // Add lights to the scene
@@ -61,18 +61,19 @@
             light1.intensity = 2;
         	
         	var grass0 = new BABYLON.StandardMaterial("grass0", scene);
-        	grass0.diffuseTexture = new BABYLON.Texture("textures/grass.png", scene);
+        	grass0.diffuseTexture = new BABYLON.Texture("textures/field.png", scene);
         
             var sourcePlane = new BABYLON.Plane(0, 0, -1, 0);
             sourcePlane.normalize();
             
-            // Add a plane for the football field (a CFL field is 110 yards x 65 yards).
-            var plane = BABYLON.MeshBuilder.CreatePlane("plane", { height: 1, width: 0.590909090909091, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.FRONTSIDE }, scene);
+            // Add a plane for the football field (a CFL field is 65 yards x 110 yards). 
+            var plane = BABYLON.MeshBuilder.CreatePlane("plane", { height: 0.590909090909091, width: 1, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.SINGLESIDE }, scene);
             plane.material = grass0;
         
             return scene;
         
         };
+
 __createScene = createScene;
         
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
