@@ -41,6 +41,14 @@
 <body>
     <canvas id="renderCanvas"></canvas>
     <script>
+        var field_height = 0.590909090909091;
+        var field_width = 1;
+        var arr_human = new Array(0.0125, 0.0125, 0.025);
+        var int_one_yard_x = ((field_width / 2) / 75);
+        var int_one_yard_y = ((field_height / 2) / 32.5);
+        var int_left_hash = int_one_yard_y * 8.5;
+        var int_right_hash = int_one_yard_y * -8.5;
+
         var canvas = document.getElementById("renderCanvas");
 
         var createScene = function () {
@@ -48,14 +56,16 @@
             // Create the scene space
             var scene = new BABYLON.Scene(engine);
         
-            // Add a camera to the scene and attach it to the canvas
-            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 1, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-        
-            camera.lowerRadiusLimit = 0;
+            // Add an ArcRotateCamera to the scene and attach it to the canvas.
+            var num_camera_closest = 1.275;
+            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, 2, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.lowerRadiusLimit = num_camera_closest;
             camera.upperRadiusLimit = 3;
             //camera.useBouncingBehavior = true;
-        
+
+            // Enable controls of this camera for the user.
+            camera.attachControl(canvas, true);
+
             // Add lights to the scene
             var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
             light1.intensity = 2;
@@ -63,15 +73,25 @@
         	var grass0 = new BABYLON.StandardMaterial("grass0", scene);
         	grass0.diffuseTexture = new BABYLON.Texture("textures/field.png", scene);
         
-            var sourcePlane = new BABYLON.Plane(0, 0, -1, 0);
+            //var sourcePlane = new BABYLON.Plane(0, 3.50, -2, 0);
+            var sourcePlane = new BABYLON.Plane(0, 0, -2, 0);
             sourcePlane.normalize();
             
-            // Add a plane for the football field (a CFL field is 65 yards x 110 yards). 
-            var plane = BABYLON.MeshBuilder.CreatePlane("plane", { height: 0.590909090909091, width: 1, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.SINGLESIDE }, scene);
+            // Add a plane for the football field; a CFL field is 65 yards (field_height) x 110 yards (field_width). 
+            var plane = BABYLON.MeshBuilder.CreatePlane("plane", { height: field_height, width: field_width, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
             plane.material = grass0;
         
+            var box1 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
+            box1.position.x = int_one_yard_x * 15;
+            box1.position.y = 0;
+            box1.position.z = (-1 * arr_human[1]);
+
+            var box2 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
+            box2.position.x = 0;
+            box2.position.y = int_right_hash;
+            box2.position.z = (-1 * arr_human[1]);
+
             return scene;
-        
         };
 
 __createScene = createScene;
