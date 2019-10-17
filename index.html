@@ -21,6 +21,7 @@
         <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
         <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.8.4/TweenMax.min.js"></script>
 
         <style>
             html, body {
@@ -60,7 +61,7 @@
             var num_camera_closest = 1.275;
             var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, 2, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
             camera.lowerRadiusLimit = num_camera_closest;
-            camera.upperRadiusLimit = 3;
+            //camera.upperRadiusLimit = 3;
             //camera.useBouncingBehavior = true;
 
             // Enable controls of this camera for the user.
@@ -80,21 +81,54 @@
             // Add a plane for the football field; a CFL field is 65 yards (field_height) x 110 yards (field_width). 
             var plane = BABYLON.MeshBuilder.CreatePlane("plane", { height: field_height, width: field_width, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
             plane.material = grass0;
-        
-            var box1 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
-            box1.position.x = int_one_yard_x * 15;
-            box1.position.y = 0;
-            box1.position.z = (-1 * arr_human[1]);
 
-            var box2 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
-            box2.position.x = 0;
-            box2.position.y = int_right_hash;
-            box2.position.z = (-1 * arr_human[1]);
+            // START: Player #1
+            var player1 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
+            var player1_position = new BABYLON.Vector3(0, 0, (-1 * arr_human[1]));
+            player1.position = player1_position;
+
+            // Create array of points to describe the path for the player.
+            var quantity = 1000;
+            var duration = 3;
+            var path = [
+                { x: player1.position.x, y: player1.position.y, z: (-1 * arr_human[1]) }, 
+                { x: (int_one_yard_x * 25), y: 0, z: (-1 * arr_human[1]) }, 
+                { x: (int_one_yard_x * 25), y: (int_one_yard_y * 15), z: (-1 * arr_human[1]) }, 
+            ];
+            var position = {
+                x: path[0].x,
+                y: path[0].y,
+                z: path[0].z
+            };
+
+            var timeline = new TimelineLite();
+            // URL: https://greensock.com/docs/v2/TweenLite/static.to()
+            var tween = TweenLite.to(position, quantity, { bezier: path, ease: Linear.easeNone });
+            console.log(path);
+
+            for ( var i = 0; i < quantity; i++ ) {
+                // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
+                tween.time(i); 
+                    
+                timeline.set(player1.position, {
+                    x: position.x,
+                    y: position.y,
+                    z: position.z
+                }, i * (duration / quantity));
+            }
+            // END: Player #1
+
+            // START: Player #2
+            var player2 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
+            player2.position.x = 0;
+            player2.position.y = int_right_hash;
+            player2.position.z = (-1 * arr_human[1]);
+            // END: Player #2
 
             return scene;
         };
 
-__createScene = createScene;
+        __createScene = createScene;
         
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var scene = createScene();
