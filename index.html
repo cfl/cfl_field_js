@@ -61,7 +61,7 @@
             var num_camera_closest = 1.275;
             var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, 2, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
             camera.lowerRadiusLimit = num_camera_closest;
-            //camera.upperRadiusLimit = 3;
+            camera.upperRadiusLimit = 3;
             //camera.useBouncingBehavior = true;
 
             // Enable controls of this camera for the user.
@@ -104,18 +104,31 @@
             var timeline = new TimelineLite();
             // URL: https://greensock.com/docs/v2/TweenLite/static.to()
             var tween = TweenLite.to(position, quantity, { bezier: path, ease: Linear.easeNone });
-            console.log(path);
+            window.addEventListener("click", function ( evt ) {
+                timeline.progress(0);
+                timeline.clear();
 
-            for ( var i = 0; i < quantity; i++ ) {
-                // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
-                tween.time(i); 
-                    
-                timeline.set(player1.position, {
-                    x: position.x,
-                    y: position.y,
-                    z: position.z
-                }, i * (duration / quantity));
-            }
+                player1.position.x = path[0].x;
+                player1.position.y = path[0].y;
+                player1.position.z = path[0].z;
+
+                for ( var i = 0; i < quantity; i++ ) {
+                    // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
+                    tween.time(i); 
+        
+                    timeline.set(player1.position, {
+                        x: position.x,
+                        y: position.y,
+                        z: position.z
+                    }, i * (duration / quantity));
+                }
+
+                // At the completion of the animation timeline, set the start point back to the first path position and restart.
+                timeline.eventCallback("onComplete", function( tl ) {
+                    //tl.progress(0);
+                    tl.restart();
+                }, ["{self}"]);
+            })
             // END: Player #1
 
             // START: Player #2
