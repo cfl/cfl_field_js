@@ -3,25 +3,25 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-        <title>Babylon.js sample code</title>
+        <title>CFL Field - BabylonJS</title>
 
         <!-- Babylon.js -->
-        <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
-        <script src="https://preview.babylonjs.com/ammo.js"></script>
-        <script src="https://preview.babylonjs.com/cannon.js"></script>
-        <script src="https://preview.babylonjs.com/Oimo.js"></script>
-        <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
-        <script src="https://preview.babylonjs.com/earcut.min.js"></script>
-        <script src="https://preview.babylonjs.com/babylon.js"></script>
-        <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
-        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
-        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
-        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
-        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
-        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.8.4/TweenMax.min.js"></script>
+        <script src="/js/pep.min.js"></script>
+        <script src="/js/dat.gui.min.js"></script>
+        <script src="/js/babylonjs/ammo.js"></script>
+        <script src="/js/babylonjs/cannon.js"></script>
+        <script src="/js/babylonjs/Oimo.js"></script>
+        <script src="/js/babylonjs/gltf_validator.js"></script>
+        <script src="/js/babylonjs/earcut.min.js"></script>
+        <script src="/js/babylonjs/babylon.js"></script>
+        <script src="/js/babylonjs/babylon.inspector.bundle.js"></script>
+        <script src="/js/babylonjs/babylonjs.materials.min.js"></script>
+        <script src="/js/babylonjs/babylonjs.proceduralTextures.min.js"></script>
+        <script src="/js/babylonjs/babylonjs.postProcess.min.js"></script>
+        <script src="/js/babylonjs/babylonjs.loaders.js"></script>
+        <script src="/js/babylonjs/babylonjs.serializers.min.js"></script>
+        <script src="/js/babylonjs/babylon.gui.min.js"></script>
+        <script src="/js/TweenMax.min.js"></script>
 
         <style>
             html, body {
@@ -56,6 +56,8 @@
         
             // Create the scene space
             var scene = new BABYLON.Scene(engine);
+
+            scene.createDefaultEnvironment();
         
             // Add an ArcRotateCamera to the scene and attach it to the canvas.
             var num_camera_closest = 1.275;
@@ -82,14 +84,25 @@
             var plane = BABYLON.MeshBuilder.CreatePlane("plane", { height: field_height, width: field_width, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
             plane.material = grass0;
 
+            // Add an action.
+            var clickedPlayer = function( meshEvent ) {
+                var pickedMesh = meshEvent.meshUnderPointer; 
+            }
+
             // START: Player #1
-            var player1 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
+            var player1 = BABYLON.MeshBuilder.CreateBox("player1", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
             var player1_position = new BABYLON.Vector3(0, 0, (-1 * arr_human[1]));
             player1.position = player1_position;
 
+            player1.actionManager = new BABYLON.ActionManager(scene);
+            // register 'clickedPlayer' as the handler function for player picking action.
+            player1.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, clickedPlayer)
+            );
+
             // Create array of points to describe the path for the player.
             var quantity = 1000;
-            var duration = 3;
+            var duration = 10;
             var path = [
                 { x: player1.position.x, y: player1.position.y, z: (-1 * arr_human[1]) }, 
                 { x: (int_one_yard_x * 25), y: 0, z: (-1 * arr_human[1]) }, 
@@ -104,10 +117,8 @@
             var timeline = new TimelineLite();
             // URL: https://greensock.com/docs/v2/TweenLite/static.to()
             var tween = TweenLite.to(position, quantity, { bezier: path, ease: Linear.easeNone });
+            /*
             window.addEventListener("click", function ( evt ) {
-                timeline.progress(0);
-                timeline.clear();
-
                 player1.position.x = path[0].x;
                 player1.position.y = path[0].y;
                 player1.position.z = path[0].z;
@@ -128,7 +139,42 @@
                     //tl.progress(0);
                     tl.restart();
                 }, ["{self}"]);
-            })
+            });
+            */
+            player1.position.x = path[0].x;
+            player1.position.y = path[0].y;
+            player1.position.z = path[0].z;
+
+            for ( var i = 0; i < quantity; i++ ) {
+                // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
+                tween.time(i); 
+    
+                timeline.set(player1.position, {
+                    x: position.x,
+                    y: position.y,
+                    z: position.z
+                }, i * (duration / quantity));
+            }
+
+            // At the completion of the animation timeline, set the start point back to the first path position and restart.
+            timeline.eventCallback("onComplete", function( tl ) {
+                //tl.progress(0);
+                tl.restart();
+            }, ["{self}"]);
+
+            /*
+            var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, 0), scene);
+            camera.radius = num_camera_closest;
+            camera.lowerRadiusLimit = num_camera_closest;
+            camera.upperRadiusLimit = num_camera_closest;
+            camera.lowerHeightOffsetLimit = 0.5;
+            camera.upperHeightOffsetLimit = 0.5;
+            camera.lockedTarget = player1;
+
+            // This attaches the camera to the canvas
+            camera.attachControl(canvas, true);
+            */
+
             // END: Player #1
 
             // START: Player #2
