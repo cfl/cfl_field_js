@@ -6,22 +6,22 @@
         <title>CFL Field - BabylonJS</title>
 
         <!-- Babylon.js -->
-        <script src="/js/pep.min.js"></script>
-        <script src="/js/dat.gui.min.js"></script>
-        <script src="/js/babylonjs/ammo.js"></script>
-        <script src="/js/babylonjs/cannon.js"></script>
-        <script src="/js/babylonjs/Oimo.js"></script>
-        <script src="/js/babylonjs/gltf_validator.js"></script>
-        <script src="/js/babylonjs/earcut.min.js"></script>
-        <script src="/js/babylonjs/babylon.js"></script>
-        <script src="/js/babylonjs/babylon.inspector.bundle.js"></script>
-        <script src="/js/babylonjs/babylonjs.materials.min.js"></script>
-        <script src="/js/babylonjs/babylonjs.proceduralTextures.min.js"></script>
-        <script src="/js/babylonjs/babylonjs.postProcess.min.js"></script>
-        <script src="/js/babylonjs/babylonjs.loaders.js"></script>
-        <script src="/js/babylonjs/babylonjs.serializers.min.js"></script>
-        <script src="/js/babylonjs/babylon.gui.min.js"></script>
-        <script src="/js/TweenMax.min.js"></script>
+        <script src="js/pep.min.js"></script>
+        <script src="js/dat.gui.min.js"></script>
+        <script src="js/babylonjs/ammo.js"></script>
+        <script src="js/babylonjs/cannon.js"></script>
+        <script src="js/babylonjs/Oimo.js"></script>
+        <script src="js/babylonjs/gltf_validator.js"></script>
+        <script src="js/babylonjs/earcut.min.js"></script>
+        <script src="js/babylonjs/babylon.js"></script>
+        <script src="js/babylonjs/babylon.inspector.bundle.js"></script>
+        <script src="js/babylonjs/babylonjs.materials.min.js"></script>
+        <script src="js/babylonjs/babylonjs.proceduralTextures.min.js"></script>
+        <script src="js/babylonjs/babylonjs.postProcess.min.js"></script>
+        <script src="js/babylonjs/babylonjs.loaders.js"></script>
+        <script src="js/babylonjs/babylonjs.serializers.min.js"></script>
+        <script src="js/babylonjs/babylon.gui.min.js"></script>
+        <script src="js/TweenMax.min.js"></script>
 
         <style>
             html, body {
@@ -171,11 +171,11 @@
             camera.lowerRadiusLimit = num_camera_closest;
             camera.upperRadiusLimit = num_camera_closest;
             //camera.lowerHeightOffsetLimit = 0.1;
-            //camera.upperHeightOffsetLimit = 0.1;
+            camera.upperHeightOffsetLimit = 3;
             camera.lockedTarget = player1;
 
             camera.rotationOffset = -90;    
-            camera.heightOffset = 0.2;   
+            camera.heightOffset = 0.25;   
             camera.minZ = 0;
 
             // This attaches the camera to the canvas
