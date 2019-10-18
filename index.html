@@ -46,31 +46,36 @@
         var field_width = 0.590909090909091;
 
         var arr_human = new Array(0.0125, 0.025, 0.0125);
-        var int_one_yard_x = ((field_width / 2) / 75);
-        var int_one_yard_y = ((field_height / 2) / 32.5);
-        var int_left_hash = int_one_yard_y * 8.5;
-        var int_right_hash = int_one_yard_y * -8.5;
+        var int_one_yard_x = ((field_height / 2) / 75);
+        var int_one_yard_z = ((field_width / 2) / 32.5);
+        var int_left_hash = int_one_yard_z * 8.5;
+        var int_right_hash = int_one_yard_z * -8.5;
 
         var canvas = document.getElementById("renderCanvas");
 
         var createScene = function () {
         
-            // Create the scene space
+            // Create the scene space.
             var scene = new BABYLON.Scene(engine);
         
             // Add an ArcRotateCamera to the scene and attach it to the canvas.
+            /*
             var num_camera_closest = 1.275;
             //var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene); // Camera aligned with looking down the X/Y/Z axes.
             var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, 0.75, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
             camera.lowerRadiusLimit = num_camera_closest;
             camera.upperRadiusLimit = 3;
+            camera.minZ = 0;
+
             //camera.useBouncingBehavior = true;
 
             // Enable controls of this camera for the user.
             camera.attachControl(canvas, true);
+            */
 
             // Add lights to the scene
             var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
+            light1.specular = new BABYLON.Color3(0, 0, 0);
             light1.intensity = 2;
             
             var grass0 = new BABYLON.StandardMaterial("grass0", scene);
@@ -81,7 +86,6 @@
             sourcePlane.normalize();
             
             // Add a plane for the football field; a CFL field is 110 yards (field_width) x 65 yards (field_height). 
-            //var plane = BABYLON.MeshBuilder.CreatePlane("plane", { height: field_height, width: field_width, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
             var plane = BABYLON.MeshBuilder.CreatePlane("plane", { width: field_width, height: field_height, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
             plane.material = grass0;
 
@@ -95,7 +99,6 @@
             var player1_position = new BABYLON.Vector3(0, (arr_human[1] / 2), 0);
             player1.position = player1_position;
 
-            /*
             player1.actionManager = new BABYLON.ActionManager(scene);
             // register 'clickedPlayer' as the handler function for player picking action.
             player1.actionManager.registerAction(
@@ -104,11 +107,11 @@
 
             // Create array of points to describe the path for the player.
             var quantity = 1000;
-            var duration = 10;
+            var duration = 5;
             var path = [
-                { x: player1.position.x, y: player1.position.y, z: (-1 * arr_human[1]) }, 
-                { x: (int_one_yard_x * 25), y: 0, z: (-1 * arr_human[1]) }, 
-                { x: (int_one_yard_x * 25), y: (int_one_yard_y * 15), z: (-1 * arr_human[1]) }, 
+                { x: player1.position.x, y: player1.position.y, z: player1.position.z }, 
+                { x: (int_one_yard_x * 10), y: player1.position.y, z: player1.position.z }, 
+                { x: (int_one_yard_x * 60), y: player1.position.y, z: (int_one_yard_z * 10) }, 
             ];
             var position = {
                 x: path[0].x,
@@ -119,28 +122,28 @@
             var timeline = new TimelineLite();
             // URL: https://greensock.com/docs/v2/TweenLite/static.to()
             var tween = TweenLite.to(position, quantity, { bezier: path, ease: Linear.easeNone });
-//            window.addEventListener("click", function ( evt ) {
-//                player1.position.x = path[0].x;
-//                player1.position.y = path[0].y;
-//                player1.position.z = path[0].z;
-//
-//                for ( var i = 0; i < quantity; i++ ) {
-//                    // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
-//                    tween.time(i); 
-//        
-//                    timeline.set(player1.position, {
-//                        x: position.x,
-//                        y: position.y,
-//                        z: position.z
-//                    }, i * (duration / quantity));
-//                }
-//
-//                // At the completion of the animation timeline, set the start point back to the first path position and restart.
-//                timeline.eventCallback("onComplete", function( tl ) {
-//                    //tl.progress(0);
-//                    tl.restart();
-//                }, ["{self}"]);
-//            });
+            window.addEventListener("click", function ( evt ) {
+                player1.position.x = path[0].x;
+                player1.position.y = path[0].y;
+                player1.position.z = path[0].z;
+
+                for ( var i = 0; i < quantity; i++ ) {
+                    // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
+                    tween.time(i); 
+        
+                    timeline.set(player1.position, {
+                        x: position.x,
+                        y: position.y,
+                        z: position.z
+                    }, i * (duration / quantity));
+                }
+
+                // At the completion of the animation timeline, set the start point back to the first path position and restart.
+                timeline.eventCallback("onComplete", function( tl ) {
+                    //tl.progress(0);
+                    tl.restart();
+                }, ["{self}"]);
+            });
             player1.position.x = path[0].x;
             player1.position.y = path[0].y;
             player1.position.z = path[0].z;
@@ -158,23 +161,25 @@
 
             // At the completion of the animation timeline, set the start point back to the first path position and restart.
             timeline.eventCallback("onComplete", function( tl ) {
-                //tl.progress(0);
+                //tl.progress(50);
                 tl.restart();
             }, ["{self}"]);
-            */
 
-            /*
-            var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 0, 0), scene);
+            var num_camera_closest = 0.2;
+            var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 1, 0), scene);
             camera.radius = num_camera_closest;
             camera.lowerRadiusLimit = num_camera_closest;
             camera.upperRadiusLimit = num_camera_closest;
-            camera.lowerHeightOffsetLimit = 0.5;
-            camera.upperHeightOffsetLimit = 0.5;
+            //camera.lowerHeightOffsetLimit = 0.1;
+            //camera.upperHeightOffsetLimit = 0.1;
             camera.lockedTarget = player1;
+
+            camera.rotationOffset = -90;    
+            camera.heightOffset = 0.2;   
+            camera.minZ = 0;
 
             // This attaches the camera to the canvas
             camera.attachControl(canvas, true);
-            */
 
             // END: Player #1
 
