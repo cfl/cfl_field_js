@@ -45,7 +45,7 @@
         var field_height = 1;
         var field_width = 0.590909090909091;
 
-        var arr_human = new Array(0.0125, 0.025, 0.0125);
+        var arr_human = new Array(0.0125 * 2, 0.025 * 2, 0.0125 * 2);
         var int_one_yard_x = ((field_height / 2) / 75);
         var int_one_yard_z = ((field_width / 2) / 32.5);
         var int_left_hash = int_one_yard_z * 8.5;
@@ -59,10 +59,8 @@
             var scene = new BABYLON.Scene(engine);
         
             // Add an ArcRotateCamera to the scene and attach it to the canvas.
-            /*
-            var num_camera_closest = 1.275;
-            //var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene); // Camera aligned with looking down the X/Y/Z axes.
-            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, 0.75, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
+            var num_camera_closest = 0.75;
+            var camera = new BABYLON.ArcRotateCamera("FieldCamera", -Math.PI / 2, 0.75, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
             camera.lowerRadiusLimit = num_camera_closest;
             camera.upperRadiusLimit = 3;
             camera.minZ = 0;
@@ -70,8 +68,7 @@
             //camera.useBouncingBehavior = true;
 
             // Enable controls of this camera for the user.
-            camera.attachControl(canvas, true);
-            */
+            //camera.attachControl(canvas, true);
 
             // Add lights to the scene
             var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
@@ -92,6 +89,40 @@
             // Add an action.
             var clickedPlayer = function( meshEvent ) {
                 var pickedMesh = meshEvent.meshUnderPointer; 
+
+                if ( scene.activeCamera.id != 'FieldCamera' ) {
+                    scene.activeCamera = camera;
+
+                    return;
+                }
+
+                var num_camera_closest = 0.2;
+                var camera_follow = new BABYLON.FollowCamera("FollowCamera", new BABYLON.Vector3(0, 1, 0), scene);
+                camera_follow.radius = num_camera_closest;
+                camera_follow.lowerRadiusLimit = num_camera_closest;
+                camera_follow.upperRadiusLimit = num_camera_closest;
+                //camera.lowerHeightOffsetLimit = 0.1;
+                camera_follow.upperHeightOffsetLimit = 3;
+                camera_follow.lockedTarget = pickedMesh;
+
+                camera_follow.rotationOffset = -90;    
+                camera_follow.heightOffset = 0.15;   
+                camera_follow.minZ = 0;
+
+                camera_follow.attachControl(canvas, true);
+
+                scene.activeCamera = camera_follow;
+            }
+
+            // If Esc is pressed, reset to the field view.
+            document.onkeydown = function( e ) {
+                if ( e.key === "Escape" ) {
+                    if ( scene.activeCamera.id != 'FieldCamera' ) {
+                        scene.activeCamera = camera;
+
+                        return;
+                    }
+                }
             }
 
             // START: Player #1
@@ -164,23 +195,6 @@
                 //tl.progress(50);
                 tl.restart();
             }, ["{self}"]);
-
-            var num_camera_closest = 0.2;
-            var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 1, 0), scene);
-            camera.radius = num_camera_closest;
-            camera.lowerRadiusLimit = num_camera_closest;
-            camera.upperRadiusLimit = num_camera_closest;
-            //camera.lowerHeightOffsetLimit = 0.1;
-            camera.upperHeightOffsetLimit = 3;
-            camera.lockedTarget = player1;
-
-            camera.rotationOffset = -90;    
-            camera.heightOffset = 0.25;   
-            camera.minZ = 0;
-
-            // This attaches the camera to the canvas
-            camera.attachControl(canvas, true);
-
             // END: Player #1
 
             // START: Player #2
