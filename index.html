@@ -21,7 +21,7 @@
         <script src="js/babylonjs/babylonjs.loaders.js"></script>
         <script src="js/babylonjs/babylonjs.serializers.min.js"></script>
         <script src="js/babylonjs/babylon.gui.min.js"></script>
-        <script src="js/TweenMax.min.js"></script>
+        <!-- <script src="js/TweenMax.min.js"></script> -->
 
         <style>
             html, body {
@@ -59,7 +59,7 @@
             var scene = new BABYLON.Scene(engine);
         
             // Add an ArcRotateCamera to the scene and attach it to the canvas.
-            var num_camera_closest = 0.75;
+            var num_camera_closest = 1.00;
             var camera = new BABYLON.ArcRotateCamera("FieldCamera", -Math.PI / 2, 0.75, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
             camera.lowerRadiusLimit = num_camera_closest;
             camera.upperRadiusLimit = 3;
@@ -136,65 +136,28 @@
                 new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, clickedPlayer)
             );
 
-            // Create array of points to describe the path for the player.
-            var quantity = 1000;
-            var duration = 5;
-            var path = [
-                { x: player1.position.x, y: player1.position.y, z: player1.position.z }, 
-                { x: (int_one_yard_x * 10), y: player1.position.y, z: player1.position.z }, 
-                { x: (int_one_yard_x * 60), y: player1.position.y, z: (int_one_yard_z * 10) }, 
-            ];
-            var position = {
-                x: path[0].x,
-                y: path[0].y,
-                z: path[0].z
-            };
+            // Create an animation at 30 FPS.
+            var player1_animation = new BABYLON.Animation("player1Animation", "position", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
 
-            var timeline = new TimelineLite();
-            // URL: https://greensock.com/docs/v2/TweenLite/static.to()
-            var tween = TweenLite.to(position, quantity, { bezier: path, ease: Linear.easeNone });
-            window.addEventListener("click", function ( evt ) {
-                player1.position.x = path[0].x;
-                player1.position.y = path[0].y;
-                player1.position.z = path[0].z;
-
-                for ( var i = 0; i < quantity; i++ ) {
-                    // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
-                    tween.time(i); 
-        
-                    timeline.set(player1.position, {
-                        x: position.x,
-                        y: position.y,
-                        z: position.z
-                    }, i * (duration / quantity));
-                }
-
-                // At the completion of the animation timeline, set the start point back to the first path position and restart.
-                timeline.eventCallback("onComplete", function( tl ) {
-                    //tl.progress(0);
-                    tl.restart();
-                }, ["{self}"]);
+            // Animation keys
+            var keys = [];
+            keys.push({
+                frame: 0,
+                value: new BABYLON.Vector3(player1.position.x, player1.position.y, player1.position.z)
             });
-            player1.position.x = path[0].x;
-            player1.position.y = path[0].y;
-            player1.position.z = path[0].z;
+            keys.push({
+                frame: 50,
+                value: new BABYLON.Vector3((int_one_yard_x * 10), player1.position.y, player1.position.z)
+            });
+            keys.push({
+                frame: 100,
+                value: new BABYLON.Vector3((int_one_yard_x * 60), player1.position.y, (int_one_yard_z * 10))
+            });
+            player1_animation.setKeys(keys);
 
-            for ( var i = 0; i < quantity; i++ ) {
-                // Jumps to the appropriate time in the tween, causing position.x and position.y to be updated accordingly.
-                tween.time(i); 
-    
-                timeline.set(player1.position, {
-                    x: position.x,
-                    y: position.y,
-                    z: position.z
-                }, i * (duration / quantity));
-            }
+            player1.animations.push(player1_animation);
 
-            // At the completion of the animation timeline, set the start point back to the first path position and restart.
-            timeline.eventCallback("onComplete", function( tl ) {
-                //tl.progress(50);
-                tl.restart();
-            }, ["{self}"]);
+            scene.beginAnimation(player1, 0, 100, true);
             // END: Player #1
 
             // START: Player #2
