@@ -46,6 +46,7 @@
         var field_width = 0.590909090909091;
         var camera = null;
         var light = null;
+        var num_camera_closest = 0.70;
 
         var int_one_yard_x = ((field_height / 2) / 75);
         var int_one_yard_z = ((field_width / 2) / 32.5);
@@ -70,8 +71,8 @@
             var scene = new BABYLON.Scene(engine);
         
             // Add an ArcRotateCamera to the scene and attach it to the canvas.
-            var num_camera_closest = 0.90;
-            camera = new BABYLON.ArcRotateCamera("FieldCamera", -Math.PI / 2, 0.75, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
+            //camera = new BABYLON.ArcRotateCamera("FieldCamera", -Math.PI / 2, 0.75, num_camera_closest, new BABYLON.Vector3(0, 0, 0), scene);
+            camera = new BABYLON.ArcRotateCamera("FieldCamera", -Math.PI / 2, 0.75, num_camera_closest, new BABYLON.Vector3(0.15, 0, 0), scene);
             camera.lowerRadiusLimit = 0.2;
             camera.upperRadiusLimit = num_camera_closest;
             camera.minZ = 0;
@@ -110,6 +111,7 @@
 
                     camera.alpha = -Math.PI / 2;
                     camera.beta = 0.75;
+                    camera.radius = num_camera_closest;
 
                     return;
                 }
@@ -307,7 +309,7 @@
             var player10 = createPlayer('player10', colour_wpg, startingPosition, keys, sourcePlane, scene);
 
             // WPG - PLAYER 11 (WR)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 16), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 7)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 16), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 4)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -323,10 +325,10 @@
                 value: new BABYLON.Vector3((int_one_yard_x * 60), startingPosition.y, (int_one_yard_z * 10))
             });
             */
-            var player11 = createPlayer('player11', colour_wpg, startingPosition, keys, sourcePlane, scene);
+            var player11_wpg = createPlayer('player11_wpg', colour_wpg, startingPosition, keys, sourcePlane, scene);
 
             // WPG - PLAYER 12 (WR)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 14), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 11)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 14), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 7)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -342,13 +344,13 @@
                 value: new BABYLON.Vector3((int_one_yard_x * 60), startingPosition.y, (int_one_yard_z * 10))
             });
             */
-            var player12 = createPlayer('player12', colour_wpg, startingPosition, keys, sourcePlane, scene);
+            var player12_wpg = createPlayer('player12_wpg', colour_wpg, startingPosition, keys, sourcePlane, scene);
             // ****** END: Team #1 (WPG) ******
 
 
             // ****** START: Team #2 (SSK) ******
             // SSK - PLAYER 1 (C)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 27), (arr_human[1] / 2), int_left_hash);
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 26), (arr_human[1] / 2), int_left_hash);
             var keys = [];
             keys.push({
                 frame: 0,
@@ -367,7 +369,7 @@
             var player1_ssk = createPlayer('player1_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
 
             // SSK - PLAYER 2 (RG)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 27), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 7)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 26), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 7)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -386,7 +388,7 @@
             var player2_ssk = createPlayer('player2_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
 
             // SSK - PLAYER 3 (LG)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 27), (arr_human[1] / 2), (int_left_hash - (int_one_yard_z * 3)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 26), (arr_human[1] / 2), (int_left_hash - (int_one_yard_z * 3)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -405,7 +407,7 @@
             var player3_ssk = createPlayer('player3_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
 
             // SSK - PLAYER 4 (DB)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 29), (arr_human[1] / 2), (int_left_hash - (int_one_yard_z * 1.5)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 27), (arr_human[1] / 2), (int_left_hash - (int_one_yard_z * 1.5)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -424,7 +426,7 @@
             var player4_ssk = createPlayer('player4_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
 
             // SSK - PLAYER 5 (DB)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 29), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 8.5)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 27.5), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 8)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -443,7 +445,7 @@
             var player5_ssk = createPlayer('player5_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
 
             // SSK - PLAYER 6 (DB)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 29.5), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 2.5)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 28), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 1.5)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -462,7 +464,7 @@
             var player6_ssk = createPlayer('player6_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
 
             // SSK - PLAYER 7 (WR)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 27), (arr_human[1] / 2), (int_right_hash - (int_one_yard_z * 2)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 26), (arr_human[1] / 2), (int_right_hash - (int_one_yard_z * 2)));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -481,7 +483,7 @@
             var player7_ssk = createPlayer('player7_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
 
             // SSK - PLAYER 8 (WR)
-            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 40), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 10)));
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 30), (arr_human[1] / 2), (int_one_yard_z * 1));
             var keys = [];
             keys.push({
                 frame: 0,
@@ -498,6 +500,82 @@
             });
             */
             var player8_ssk = createPlayer('player8_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
+
+            // SSK - PLAYER 9 (WR)
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 32), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 14)));
+            var keys = [];
+            keys.push({
+                frame: 0,
+                value: new BABYLON.Vector3(startingPosition.x, startingPosition.y, startingPosition.z)
+            });
+            /*
+            keys.push({
+                frame: 50,
+                value: new BABYLON.Vector3((int_one_yard_x * 10), startingPosition.y, startingPosition.z)
+            });
+            keys.push({
+                frame: 100,
+                value: new BABYLON.Vector3((int_one_yard_x * 60), startingPosition.y, (int_one_yard_z * 10))
+            });
+            */
+            var player9_ssk = createPlayer('player9_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
+
+            // SSK - PLAYER 10 (WR)
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 35), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 16)));
+            var keys = [];
+            keys.push({
+                frame: 0,
+                value: new BABYLON.Vector3(startingPosition.x, startingPosition.y, startingPosition.z)
+            });
+            /*
+            keys.push({
+                frame: 50,
+                value: new BABYLON.Vector3((int_one_yard_x * 10), startingPosition.y, startingPosition.z)
+            });
+            keys.push({
+                frame: 100,
+                value: new BABYLON.Vector3((int_one_yard_x * 60), startingPosition.y, (int_one_yard_z * 10))
+            });
+            */
+            var player10_ssk = createPlayer('player10_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
+
+            // SSK - PLAYER 11 (WR)
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 33.5), (arr_human[1] / 2), (int_left_hash + (int_one_yard_z * 5)));
+            var keys = [];
+            keys.push({
+                frame: 0,
+                value: new BABYLON.Vector3(startingPosition.x, startingPosition.y, startingPosition.z)
+            });
+            /*
+            keys.push({
+                frame: 50,
+                value: new BABYLON.Vector3((int_one_yard_x * 10), startingPosition.y, startingPosition.z)
+            });
+            keys.push({
+                frame: 100,
+                value: new BABYLON.Vector3((int_one_yard_x * 60), startingPosition.y, (int_one_yard_z * 10))
+            });
+            */
+            var player11_ssk = createPlayer('player11_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
+
+            // SSK - PLAYER 12 (WR)
+            var startingPosition = new BABYLON.Vector3((int_one_yard_x * 38.5), (arr_human[1] / 2), (int_left_hash - (int_one_yard_z * 7)));
+            var keys = [];
+            keys.push({
+                frame: 0,
+                value: new BABYLON.Vector3(startingPosition.x, startingPosition.y, startingPosition.z)
+            });
+            /*
+            keys.push({
+                frame: 50,
+                value: new BABYLON.Vector3((int_one_yard_x * 10), startingPosition.y, startingPosition.z)
+            });
+            keys.push({
+                frame: 100,
+                value: new BABYLON.Vector3((int_one_yard_x * 60), startingPosition.y, (int_one_yard_z * 10))
+            });
+            */
+            var player12_ssk = createPlayer('player12_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
             // ****** START: Team #2 (SSK) ******
 
             showAxis(0.75);
@@ -509,7 +587,7 @@
 
         __createScene = createScene;
         
-        var int_human_scale = 1.0;
+        var int_human_scale = 2.00;
         var arr_human = new Array(0.0125 / int_human_scale, 0.025 / int_human_scale, 0.0125 / int_human_scale);
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var scene = createScene();
@@ -541,7 +619,19 @@
             player.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction({ trigger: BABYLON.ActionManager.OnPickDownTrigger, parameter: {} }, clickedPlayer)
             );
+            player.actionManager.registerAction(
+                new BABYLON.ExecuteCodeAction(
+                    {
+                        trigger: BABYLON.ActionManager.OnPointerOverTrigger, 
+                        parameter: {},
+                    },
+                    function ( meshEvent ) { 
+                        var pickedMesh = meshEvent.meshUnderPointer; 
 
+                        console.log('Hovering over: ' + pickedMesh.id);
+                    }
+                )
+            );
             // Create an animation at 30 FPS.
             var player_animation = new BABYLON.Animation("player1Animation", "position", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
 
@@ -559,7 +649,7 @@
 
             var pickedMesh = meshEvent.meshUnderPointer; 
             var num_camera_closest = 0.1;
-            var camera_follow = new BABYLON.FollowCamera("FollowCamera", new BABYLON.Vector3(0, 1, 0), scene);
+            var camera_follow = new BABYLON.FollowCamera("FollowCamera", new BABYLON.Vector3(0, num_camera_closest, 0), scene);
             camera_follow.radius = num_camera_closest;
             camera_follow.lowerRadiusLimit = num_camera_closest;
             camera_follow.upperRadiusLimit = num_camera_closest;
@@ -568,8 +658,8 @@
             camera_follow.lockedTarget = pickedMesh;
 
             camera_follow.rotationOffset = -90;    
-            camera_follow.heightOffset = 0.15;   
-            camera_follow.minZ = 0;
+            camera_follow.heightOffset = num_camera_closest;   
+            camera_follow.minZ = -1.0;
 
             camera_follow.attachControl(canvas, true);
 
