@@ -45,6 +45,7 @@
         var field_height = 1;
         var field_width = 0.590909090909091;
         var camera = null;
+        var light = null;
 
         var int_one_yard_x = ((field_height / 2) / 75);
         var int_one_yard_z = ((field_width / 2) / 32.5);
@@ -88,9 +89,9 @@
             camera.attachControl(canvas, true);
 
             // Add lights to the scene
-            var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
-            light1.specular = new BABYLON.Color3(0, 0, 0);
-            light1.intensity = 2;
+            light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
+            light.specular = new BABYLON.Color3(0, 0, 0);
+            light.intensity = 2;
             
             var grass0 = new BABYLON.StandardMaterial("grass0", scene);
             grass0.diffuseTexture = new BABYLON.Texture("textures/field.png", scene);
@@ -508,7 +509,7 @@
 
         __createScene = createScene;
         
-        var int_human_scale = 2.0;
+        var int_human_scale = 1.0;
         var arr_human = new Array(0.0125 / int_human_scale, 0.025 / int_human_scale, 0.0125 / int_human_scale);
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var scene = createScene();
@@ -527,6 +528,7 @@
         function createPlayer( name, colour, startingPosition, keys, sourcePlane, scene ) {
             var player = BABYLON.MeshBuilder.CreateBox(name, { width: arr_human[0], height: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
             player.position = startingPosition;
+            player.isPickable = true;
 
             var material = new BABYLON.StandardMaterial(scene);
             material.alpha = 1;
@@ -537,7 +539,7 @@
             // register 'clickedPlayer' as the handler function for player picking action.
             player.actionManager = new BABYLON.ActionManager(scene);
             player.actionManager.registerAction(
-                new BABYLON.ExecuteCodeAction({ trigger: BABYLON.ActionManager.OnPickTrigger, parameter: {} }, clickedPlayer)
+                new BABYLON.ExecuteCodeAction({ trigger: BABYLON.ActionManager.OnPickDownTrigger, parameter: {} }, clickedPlayer)
             );
 
             // Create an animation at 30 FPS.
