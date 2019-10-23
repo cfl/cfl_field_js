@@ -45,7 +45,6 @@
         var field_height = 1;
         var field_width = 0.590909090909091;
 
-        var arr_human = new Array(0.0125 * 2, 0.025 * 2, 0.0125 * 2);
         var int_one_yard_x = ((field_height / 2) / 75);
         var int_one_yard_z = ((field_width / 2) / 32.5);
         var int_left_hash = int_one_yard_z * 8.5;
@@ -68,7 +67,7 @@
             //camera.useBouncingBehavior = true;
 
             // Enable controls of this camera for the user.
-            //camera.attachControl(canvas, true);
+            camera.attachControl(canvas, true);
 
             // Add lights to the scene
             var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
@@ -78,13 +77,76 @@
             var grass0 = new BABYLON.StandardMaterial("grass0", scene);
             grass0.diffuseTexture = new BABYLON.Texture("textures/field.png", scene);
         
-            //var sourcePlane = new BABYLON.Plane(0, 0, -2, 0);
             var sourcePlane = new BABYLON.Plane(0, 1, 0, 0);
             sourcePlane.normalize();
             
             // Add a plane for the football field; a CFL field is 110 yards (field_width) x 65 yards (field_height). 
             var plane = BABYLON.MeshBuilder.CreatePlane("plane", { width: field_width, height: field_height, sourcePlane: sourcePlane, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
             plane.material = grass0;
+
+            // If Esc is pressed, reset to the field view.
+            document.onkeydown = function( e ) {
+                if ( e.key === "Escape" ) {
+                    if ( scene.activeCamera.id != 'FieldCamera' ) {
+                        scene.activeCamera = camera;
+
+                        return;
+                    }
+                }
+            }
+
+            // START: Player #1
+            var startingPosition = new BABYLON.Vector3(0, (arr_human[1] / 2), 0);
+            var keys = [];
+            keys.push({
+                frame: 0,
+                value: new BABYLON.Vector3(startingPosition.x, startingPosition.y, startingPosition.z)
+            });
+            keys.push({
+                frame: 50,
+                value: new BABYLON.Vector3((int_one_yard_x * 10), startingPosition.y, startingPosition.z)
+            });
+            keys.push({
+                frame: 100,
+                value: new BABYLON.Vector3((int_one_yard_x * 60), startingPosition.y, (int_one_yard_z * 10))
+            });
+            var player1 = createPlayer('player1', startingPosition, keys, sourcePlane, scene);
+            // END: Player #1
+
+            // START: Player #2
+            /*
+            var player2 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
+            player2.position.x = 0;
+            player2.position.y = int_right_hash;
+            player2.position.z = (-1 * arr_human[1]);
+            */
+            // END: Player #2
+            
+            showAxis(0.75);
+
+            return scene;
+        };
+
+        __createScene = createScene;
+        
+        var arr_human = new Array(0.0125, 0.025, 0.0125);
+        var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        var scene = createScene();
+
+        engine.runRenderLoop(function () {
+            if (scene) {
+                scene.render();
+            }
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+
+        function createPlayer( name, startingPosition, keys, sourcePlane, scene ) {
+            var player = BABYLON.MeshBuilder.CreateBox(name, { width: arr_human[0], height: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
+            player.position = startingPosition;
 
             // Add an action.
             var clickedPlayer = function( meshEvent ) {
@@ -114,81 +176,23 @@
                 scene.activeCamera = camera_follow;
             }
 
-            // If Esc is pressed, reset to the field view.
-            document.onkeydown = function( e ) {
-                if ( e.key === "Escape" ) {
-                    if ( scene.activeCamera.id != 'FieldCamera' ) {
-                        scene.activeCamera = camera;
-
-                        return;
-                    }
-                }
-            }
-
-            // START: Player #1
-            var player1 = BABYLON.MeshBuilder.CreateBox("player1", { width: arr_human[0], height: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
-            var player1_position = new BABYLON.Vector3(0, (arr_human[1] / 2), 0);
-            player1.position = player1_position;
-
-            player1.actionManager = new BABYLON.ActionManager(scene);
             // register 'clickedPlayer' as the handler function for player picking action.
-            player1.actionManager.registerAction(
+            player.actionManager = new BABYLON.ActionManager(scene);
+            player.actionManager.registerAction(
                 new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, clickedPlayer)
             );
 
             // Create an animation at 30 FPS.
-            var player1_animation = new BABYLON.Animation("player1Animation", "position", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+            var player_animation = new BABYLON.Animation("player1Animation", "position", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
 
             // Animation keys
-            var keys = [];
-            keys.push({
-                frame: 0,
-                value: new BABYLON.Vector3(player1.position.x, player1.position.y, player1.position.z)
-            });
-            keys.push({
-                frame: 50,
-                value: new BABYLON.Vector3((int_one_yard_x * 10), player1.position.y, player1.position.z)
-            });
-            keys.push({
-                frame: 100,
-                value: new BABYLON.Vector3((int_one_yard_x * 60), player1.position.y, (int_one_yard_z * 10))
-            });
-            player1_animation.setKeys(keys);
+            player_animation.setKeys(keys);
+            player.animations.push(player_animation);
 
-            player1.animations.push(player1_animation);
+            scene.beginAnimation(player, 0, 100, true);
 
-            scene.beginAnimation(player1, 0, 100, true);
-            // END: Player #1
-
-            // START: Player #2
-            /*
-            var player2 = BABYLON.MeshBuilder.CreateBox("box", { height: arr_human[0], width: arr_human[1], depth: arr_human[2], sourcePlane: sourcePlane }, scene);
-            player2.position.x = 0;
-            player2.position.y = int_right_hash;
-            player2.position.z = (-1 * arr_human[1]);
-            */
-            // END: Player #2
-            
-            showAxis(0.75);
-
-            return scene;
-        };
-
-        __createScene = createScene;
-        
-        var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        var scene = createScene();
-
-        engine.runRenderLoop(function () {
-            if (scene) {
-                scene.render();
-            }
-        });
-
-        // Resize
-        window.addEventListener("resize", function () {
-            engine.resize();
-        });
+            return player;
+        }
 
         // show axis
         function showAxis(size) {
@@ -225,7 +229,7 @@
             axisZ.color = new BABYLON.Color3(0, 0, 1);
             var zChar = makeTextPlane("Z", "blue", size / 10);
             zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
-          };
+          }
 
     </script>
 </body>
