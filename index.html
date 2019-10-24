@@ -555,6 +555,32 @@
             var player12_ssk = createPlayer('player12_ssk', colour_ssk, startingPosition, keys, sourcePlane, scene);
             // ****** START: Team #2 (SSK) ******
 
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+            var text1 = new BABYLON.GUI.TextBlock();
+            text1.text = "Esc = Reset Camera";
+            text1.color = "white";
+            text1.fontSize = 16;
+            text1.leftInPixels = (canvas.width / 2) * -1 + 80;
+            text1.topInPixels = ((canvas.height / 2) * -1) + 15;
+            advancedTexture.addControl(text1);    
+
+            var text2 = new BABYLON.GUI.TextBlock();
+            text2.text = "Space = Pause / Play";
+            text2.color = "white";
+            text2.fontSize = 16;
+            text2.leftInPixels = (canvas.width / 2) * -1 + 83;
+            text2.topInPixels = ((canvas.height / 2) * -1) + 45;
+            advancedTexture.addControl(text2);    
+
+            var text3 = new BABYLON.GUI.TextBlock();
+            text3.text = "Click Player = Follow Camera";
+            text3.color = "white";
+            text3.fontSize = 16;
+            text3.leftInPixels = (canvas.width / 2) * -1 + 112;
+            text3.topInPixels = ((canvas.height / 2) * -1) + 75;
+            advancedTexture.addControl(text3);    
+
             showAxis(0.75);
 
             canvas.focus();
