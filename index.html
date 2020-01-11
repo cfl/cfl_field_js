@@ -112,6 +112,8 @@
                     camera.alpha = -Math.PI / 2;
                     camera.beta = 0.75;
                     camera.radius = num_camera_closest;
+                    scene.onBeforeRenderObservable.remove(followObserver);
+                    pickedMesh.rotation.y = 0;
 
                     return;
                 }
@@ -647,25 +649,46 @@
             return player;
         }
 
+        var camera_follow;
+        var followObserver;
+        var pickedMesh;
+        var previousVector;
+        
         function clickedPlayer( meshEvent ) {
             console.log(meshEvent);
-
-            var pickedMesh = meshEvent.meshUnderPointer; 
-            var num_camera_closest = 0.10;
-            var camera_follow = new BABYLON.FollowCamera("FollowCamera", new BABYLON.Vector3(0, num_camera_closest, 0), scene);
-            camera_follow.radius = num_camera_closest;
-            camera_follow.lowerRadiusLimit = num_camera_closest;
-            camera_follow.upperRadiusLimit = num_camera_closest;
-            camera_follow.lowerHeightOffsetLimit = num_camera_closest;
-            camera_follow.upperHeightOffsetLimit = num_camera_closest;
-            camera_follow.lockedTarget = pickedMesh;
-
-            camera_follow.rotationOffset = -90;    
-            camera_follow.minZ = -1.0;
+            pickedMesh = meshEvent.meshUnderPointer; 
+            camera_follow = new BABYLON.FreeCamera("thirdPersonCam", BABYLON.Vector3.Zero(), scene);
+            camera_follow.position.x = pickedMesh.position.x
+            camera_follow.position.y = 1;            
+            camera_follow.position.z = pickedMesh.position.z;            
+            camera_follow.minZ = 0.001;
 
             camera_follow.attachControl(canvas, true);
-
             scene.activeCamera = camera_follow;
+            pickedMesh.rotation.y = 0;
+            previousVector = null;
+            scene.onBeforeRenderObservable.remove(followObserver);
+            followObserver = scene.onBeforeRenderObservable.add(followCallback);
+        }
+
+        function followCallback() {
+            if (previousVector == null) {
+                previousVector = pickedMesh.position;
+            } else {
+                var currentVector = pickedMesh.position;
+                var direction = currentVector.subtract(previousVector).normalize(); 
+                var angleY = Math.atan2(direction.x, direction.z);
+                pickedMesh.rotation.y = angleY;
+                camera_follow.position.x = pickedMesh.position.x;
+                camera_follow.position.y = 0.01;
+                camera_follow.position.z = pickedMesh.position.z;
+                var inFront = currentVector.clone();
+                inFront.x += 0.1 * Math.cos(angleY-Math.PI/2);
+                inFront.y = 0.01;
+                inFront.z -= 0.1 * Math.sin(angleY-Math.PI/2);                
+                camera_follow.setTarget(inFront);
+                previousVector = currentVector;                
+            }
         }
 
         function HexToRGB( r, g, b ) {
@@ -711,6 +734,10 @@
             axisZ.color = new BABYLON.Color3(0, 0, 1);
             var zChar = makeTextPlane("Z", "blue", size / 10);
             zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+
+            axisX.isPickable = false;
+            axisY.isPickable = false;
+            axisZ.isPickable = false;
           }
 
     </script>
