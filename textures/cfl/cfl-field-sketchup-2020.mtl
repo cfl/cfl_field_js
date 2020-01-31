@@ -1,0 +1,43 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl Concrete_Brushed
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.776471 0.756863
+Ks 0.330000 0.330000 0.330000
+map_Kd cfl-field-sketchup-2020/Concrete_Brushed.jpg
+
+newmtl White_grass
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+map_Kd cfl-field-sketchup-2020/White_grass.jpg
+
+newmtl Vegetation_Grass_Artificial
+Ka 0.000000 0.000000 0.000000
+Kd 0.384314 0.549020 0.290196
+Ks 0.330000 0.330000 0.330000
+map_Kd cfl-field-sketchup-2020/Vegetation_Grass_Artificial.jpg
+
+newmtl M_0056_Yellow
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 0.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl M_0100_SteelBlue
+Ka 0.000000 0.000000 0.000000
+Kd 0.274510 0.509804 0.705882
+Ks 0.330000 0.330000 0.330000
+
+newmtl Yellow_grass
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 0.000000
+Ks 0.330000 0.330000 0.330000
+map_Kd cfl-field-sketchup-2020/Yellow_grass.jpg
+
+newmtl ForegroundColor
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.330000 0.330000 0.330000
+

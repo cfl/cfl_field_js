@@ -58,7 +58,7 @@
             camera.attachControl(canvas, false);
         
             var assetsManager = new BABYLON.AssetsManager(scene);
-            var meshTask = assetsManager.addMeshTask("field task", "", "textures/sprblfld/", "sprblfld.obj");
+            var meshTask = assetsManager.addMeshTask("field task", "", "textures/cfl/", "cfl-field-sketchup-2020.obj");
             
             meshTask.onSuccess = function (task) {
                 task.loadedMeshes[0].position = BABYLON.Vector3.Zero();
